@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>تجربة توعوية</title>
+<style>
+:root{--bg1:#cfe0ee;--bg2:#e8b25a;--card:#f3e6bd;--text:#3b2a14;--btn:#6b8e23;--btn2:#8a6a3d;--cash:#d9822b;--cell:#d8c593;--act:#f4e7b8;--safe:#8fc46a;--trap:#d9534f;--head:#5a4326}
+*{box-sizing:border-box;font-family:Tahoma,Arial,sans-serif}
+body{margin:0;background:linear-gradient(var(--bg1),var(--bg2));min-height:100vh;padding:12px;color:var(--text);display:flex;justify-content:center}
+.w{width:100%;max-width:480px}
+h1{text-align:center;margin:4px 0 10px;font-size:23px}
+.fixed{background:#222;color:#ffd54f;border-radius:8px;padding:6px;font-size:12px;text-align:center;margin-bottom:8px}
+.warn{background:linear-gradient(#9b2a2a,#6f1717);color:#fff;border-radius:12px;padding:12px;font-size:15px;margin-bottom:8px;line-height:1.8;font-weight:bold;white-space:pre-line}
+.official{background:#fff3cd;color:#3b2a14;border:2px solid #c9a24b;border-radius:12px;padding:10px;font-size:13px;margin-bottom:8px;line-height:1.8;white-space:pre-line}
+.banner{background:var(--head);color:#fff;border-radius:10px;padding:10px;margin-bottom:8px;text-align:center;white-space:pre-line}
+.tip{background:#e3f2fd;color:#0d3c61;border-radius:10px;padding:9px;margin-bottom:10px;text-align:center;font-size:14px;line-height:1.7}
+.card{background:var(--card);border-radius:14px;padding:12px;margin-bottom:10px;box-shadow:0 2px 6px #0003}
+input,button{font-size:16px;padding:11px;border-radius:10px;border:1px solid #7a6340}
+input[type=text],input[type=password],input[type=number]{width:100%;margin-bottom:8px}
+button{border:0;background:var(--btn);color:#fff;font-weight:bold;cursor:pointer}
+button.g{background:var(--btn2)}button.o{background:var(--cash)}
+button:disabled{opacity:.45}
+.row{display:flex;gap:8px;align-items:center;margin-bottom:8px}
+.tabs{display:flex;gap:6px;margin-bottom:10px}
+.tabs button{flex:1;background:#6b5a3a;padding:10px 4px;font-size:14px}.tabs button.on{background:var(--btn);box-shadow:0 0 0 2px #fff8}
+.mult{width:64px;text-align:center;font-weight:bold;font-size:14px}
+.cell{flex:1;height:48px;background:var(--cell);border:2px solid #7a6340;color:#000;font-size:22px;border-radius:12px}
+.cell.act{background:var(--act);box-shadow:0 0 10px #c9a24b}
+.cell.safe{background:var(--safe)}.cell.trap{background:var(--trap)}
+.balbox{background:linear-gradient(#3b3b3b,#222);color:#fff;border-radius:14px;padding:12px;text-align:center;margin-bottom:10px}
+.big{font-size:30px;font-weight:bold;color:#ffd54f}.sm{font-size:12px;opacity:.85}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:10px}
+.grid2{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:10px}
+.sbox{background:var(--card);border-radius:12px;padding:8px;text-align:center;font-size:12px;box-shadow:0 1px 4px #0003}
+.sbox b{display:block;font-size:17px}
+.msgbox{text-align:center;background:var(--head);color:#fff;border-radius:12px;padding:12px;margin-bottom:10px;line-height:1.7;white-space:pre-line}
+.chips{display:flex;gap:6px;margin-bottom:8px}.chips button{flex:1;padding:7px;font-size:13px;background:var(--btn2)}
+.res{font-size:46px;text-align:center;margin:8px 0;min-height:60px}
+.edge{font-size:12px;line-height:1.8;text-align:center;opacity:.9;margin-bottom:10px}
+.hide{display:none!important}
+.modal{position:fixed;inset:0;background:#000b;display:flex;align-items:center;justify-content:center;padding:20px;z-index:9}
+.mbox{background:#fff;color:#222;border-radius:16px;padding:18px;max-width:420px;width:100%;text-align:center;line-height:1.9;font-size:16px}
+.mbox button{margin-top:12px;width:100%}
+input[type=range]{width:100%;padding:0;margin:6px 0}
+#fatal{background:#b00;color:#fff;padding:10px;border-radius:8px;margin-bottom:8px;font-size:13px;direction:ltr;text-align:left}
+</style></head>
+<body><div class="w">
+  <div id="fatal" class="hide"></div>
+  <h1 data-t="title"></h1>
+  <div class="fixed">🔒 تجربة توعوية: الرصيد وهمي بالكامل ولا توجد أموال حقيقية.</div>
+  <div class="warn" data-t="warn"></div>
+  <div class="official" data-t="official"></div>
+  <div class="banner hide" id="banner" data-t="banner"></div>
+  <div class="tip hide" id="tip"></div>
+
+  <div id="auth" class="card hide">
+    <input type="text" id="u" placeholder="اسم المستخدم (حروف إنجليزي أو أرقام)" autocomplete="username">
+    <input type="password" id="p" placeholder="كلمة السر (6 أحرف على الأقل)" autocomplete="current-password">
+    <div class="row"><button id="bl" style="flex:1" data-t="btnLogin"></button><button id="br" class="g" style="flex:1" data-t="btnReg"></button></div>
+    <div id="aerr" style="color:#a00;font-weight:bold"></div>
+  </div>
+
+  <div id="main" class="hide">
+    <div class="balbox"><div class="sm">الرصيد (وهمي)</div><div class="big" id="bal"></div><div class="sm" id="who"></div></div>
+    <div class="grid3">
+      <div class="sbox"><b id="s1">0</b>جولات</div><div class="sbox"><b id="s2">0</b>كسب</div><div class="sbox"><b id="s3">0</b>خسر</div>
+    </div>
+    <div class="grid2">
+      <div class="sbox"><b id="s4">0</b>إجمالي ما راهنت به</div><div class="sbox"><b id="s5">0</b>خسارتك الصافية</div>
+    </div>
+    <div class="edge" id="edge"></div>
+    <div class="msgbox" id="msg"></div>
+    <div class="tabs">
+      <button data-g="g1" data-t="g1"></button><button data-g="g2" data-t="g2"></button><button data-g="g3" data-t="g3"></button>
+    </div>
+    <div class="chips"><button data-b="100">100</button><button data-b="1000">1,000</button><button data-b="10000">10,000</button><button data-b="100000">100,000</button></div>
+    <input type="number" id="bet" min="1" placeholder="الرهان">
+
+    <div id="p_g1">
+      <div class="row"><button id="m2" style="flex:1">2x</button><button id="m3" class="g" style="flex:1">3x</button></div>
+      <div class="card" id="board"></div>
+      <div class="row"><button id="start" style="flex:1" data-t="btnStart"></button><button id="cash" class="o" style="flex:1" disabled></button></div>
+    </div>
+    <div id="p_g2" class="hide">
+      <div class="card"><div class="res" id="coinres">🪙</div>
+        <div class="row"><button id="ch" style="flex:1">صورة</button><button id="ct" class="g" style="flex:1">كتابة</button></div>
+        <div class="sm" id="coininfo" style="text-align:center"></div></div>
+    </div>
+    <div id="p_g3" class="hide">
+      <div class="card"><div class="res" id="diceres">🎲</div>
+        <div class="row"><button id="du" style="flex:1">أقل من أو يساوي</button><button id="do" class="g" style="flex:1">أكبر من</button></div>
+        <div style="text-align:center;font-weight:bold">الرقم: <span id="tgv">50</span></div>
+        <input type="range" id="tg" min="5" max="95" value="50">
+        <div class="sm" id="diceinfo" style="text-align:center;margin-bottom:8px"></div>
+        <button id="roll" style="width:100%">ارمي</button></div>
+    </div>
+    <button class="g" id="out" style="width:100%" data-t="btnOut"></button>
+  </div>
+</div>
+<div id="modal" class="modal hide"><div class="mbox"><div id="mtext"></div><button id="mok">حسنًا</button></div></div>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
+<script>
+window.onerror=function(m,s,l){var e=document.getElementById("fatal");e.textContent="ERROR: "+m+" (line "+l+")";e.classList.remove("hide");};
+firebase.initializeApp({
+  apiKey:"AIzaSyC0WWJQgh4lEYbOqfKFMcI1vLgwJS5DwCQ",
+  authDomain:"xtra-f3087.firebaseapp.com",
+  databaseURL:"https://xtra-f3087-default-rtdb.firebaseio.com",
+  projectId:"xtra-f3087",
+  storageBucket:"xtra-f3087.firebasestorage.app",
+  messagingSenderId:"122881932496",
+  appId:"1:122881932496:web:cf63664e63e38176d332d5"
+});
+const DB=firebase.database();
+const $=id=>document.getElementById(id);
+const f=n=>Number(n).toLocaleString("en",{maximumFractionDigits:2});
+const r2=n=>Math.round(n*100)/100;
+const rnd=()=>crypto.getRandomValues(new Uint32Array(1))[0]/4294967296;
+const lines=s=>String(s||"").split("\n").map(x=>x.trim()).filter(Boolean);
+const rndLine=s=>{const a=lines(s);return a.length?a[Math.floor(rnd()*a.length)]:"";};
+const ROWS=6,SESS="ws_sess2";
+
+const DEF={
+texts:{
+title:"ركن الغرب - تجربة توعوية",
+warn:"⚠️ المراهنات خطأ وخطر حقيقي على الفرد والمجتمع. لا تراهن أبدًا.",
+official:"📢 تنبيه رسمي: هذه تجربة توعوية. الألعاب هنا مضبوطة لصالح المنصة كما في منصات المراهنات الحقيقية، والرصيد وهمي بالكامل ولا توجد أي أموال حقيقية. نخزّن اسم المستخدم وكلمة سر مشفّرة ونتائجك فقط.",
+banner:"",
+tips:"يا {name}، المنصات الحقيقية مصممة بحيث تخسر في النهاية\nالمكسب المؤقت جزء من الفخ\nكل جولة بتخسرها هنا بتحصل في الواقع بفلوس حقيقية",
+g1:"سلّم الغرب",g2:"قلب العملة",g3:"النرد",
+msgStart:"اختار لعبة وحط رهانك",msgFirst:"اختار خانة في الصف الأول",msgNext:"كمّل أو اسحب",
+msgLost:"خسرت! المراهنة خسارة في النهاية\nخسرت يا {name}، وده اللي بيحصل مع كل اللاعبين",
+msgWin:"كسبت",msgCash:"سحبت",noBal:"الرصيد مش كفاية. المشرف فقط يضيف رصيد",
+closedMsg:"هذا الحساب مغلق",regClosed:"التسجيل مغلق حاليًا",
+popText:"بعد {rounds} جولات خسرت {losses} مرة، وصافي خسارتك {net}. المراهنات خطأ وخطر حقيقي.",
+btnStart:"ابدأ",btnCash:"اسحب",btnLogin:"دخول",btnReg:"حساب جديد",btnOut:"خروج"},
+colors:{bg1:"#cfe0ee",bg2:"#e8b25a",card:"#f3e6bd",text:"#3b2a14",btn:"#6b8e23",btn2:"#8a6a3d",cash:"#d9822b",cell:"#d8c593",act:"#f4e7b8",safe:"#8fc46a",trap:"#d9534f",head:"#5a4326"},
+settings:{initial:100000,newZero:false,registration:true,minBet:1,defBet:1000,rtp:96,popEvery:5}
+};
+let C=JSON.parse(JSON.stringify(DEF));
+function merge(c){
+  c=c||{};
+  const t=Object.assign({},DEF.texts,c.texts||{});
+  ["warn","official"].forEach(k=>{if(!String(t[k]||"").trim())t[k]=DEF.texts[k];});
+  C={texts:t,colors:Object.assign({},DEF.colors,c.colors||{}),settings:Object.assign({},DEF.settings,c.settings||{})};
+}
+let U=null,name=null,ref=null,game="g1",mode=2,lastLoss=null,ti=0,prev=-1,dmode="under",betSet=false;
+function tpl(s){
+  const u=U||{},net=(u.returned||0)-(u.wagered||0);
+  return String(s||"").replace(/\{name\}/g,name||"صديقي").replace(/\{rounds\}/g,u.rounds||0)
+    .replace(/\{losses\}/g,u.losses||0).replace(/\{wins\}/g,u.wins||0).replace(/\{net\}/g,f(Math.abs(net)));
+}
+function applyCfg(){
+  for(const k in C.colors)document.documentElement.style.setProperty("--"+k,C.colors[k]);
+  document.querySelectorAll("[data-t]").forEach(e=>{e.textContent=tpl(C.texts[e.dataset.t]);});
+  $("banner").classList.toggle("hide",!String(C.texts.banner).trim());
+  document.title=C.texts.title;
+  if(!betSet){$("bet").value=C.settings.defBet;betSet=true;}
+}
+const msg=t=>$("msg").textContent=t;
+const modal=t=>{$("mtext").textContent=t;$("modal").classList.remove("hide");};
+$("mok").onclick=()=>$("modal").classList.add("hide");
+const show=n=>{$("auth").classList.toggle("hide",n!=="auth");$("main").classList.toggle("hide",n!=="main");};
+function tipTick(adv){
+  const a=lines(C.texts.tips),el=$("tip");
+  if(!a.length||!U){el.classList.add("hide");return;}
+  el.classList.remove("hide");el.textContent="💡 "+tpl(a[ti%a.length]);if(adv)ti++;
+}
+async function hash(n,p){
+  const b=await crypto.subtle.digest("SHA-256",new TextEncoder().encode("ws2:"+n+":"+p));
+  return [...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,"0")).join("");
+}
+async function newId(n){
+  for(let i=0;i<40;i++){
+    const id=String(100000000+Math.floor(rnd()*900000000));
+    const t=await DB.ref("ids/"+id).transaction(c=>c===null?n:undefined);
+    if(t.committed)return id;
+  }
+  throw new Error("id");
+}
+const lmult=(m,k)=>r2(C.settings.rtp/100*Math.pow(m/(m-1),k));
+
+/* ---------- العرض ---------- */
+function drawLadder(){
+  const g=U.game,m=g?g.mode:(lastLoss?lastLoss.mode:mode),b=$("board");b.innerHTML="";
+  for(let r=ROWS-1;r>=0;r--){
+    const row=document.createElement("div");row.className="row";
+    const ml=document.createElement("div");ml.className="mult";ml.textContent="×"+lmult(m,r+1);row.appendChild(ml);
+    for(let c=0;c<m;c++){
+      const x=document.createElement("button");x.className="cell";x.disabled=true;
+      if(g){
+        if(r<g.level)x.classList.add("safe");
+        if(r===g.level){x.disabled=false;x.classList.add("act");x.onclick=()=>lpick(c);}
+      }else if(lastLoss){
+        if(r<lastLoss.row)x.classList.add("safe");
+        if(r===lastLoss.row&&c===lastLoss.col){x.classList.add("trap");x.textContent="💣";}
+      }
+      row.appendChild(x);
+    }
+    b.appendChild(row);
+  }
+}
+const dicePct=()=>{const t=+$("tg").value;return dmode==="over"?100-t:t;};
+function updDice(){
+  $("tgv").textContent=$("tg").value;
+  const p=dicePct()/100;
+  $("diceinfo").textContent="فرصة الفوز "+dicePct()+"% | المضاعف ×"+r2(C.settings.rtp/100/p);
+  $("du").className=dmode==="under"?"":"g";$("do").className=dmode==="over"?"":"g";
+}
+function render(){
+  applyCfg();
+  $("bal").textContent=f(U.balance);
+  $("who").textContent=name+" • الرقم: "+(U.id||"—");
+  $("s1").textContent=U.rounds||0;$("s2").textContent=U.wins||0;$("s3").textContent=U.losses||0;
+  $("s4").textContent=f(U.wagered||0);$("s5").textContent=f(Math.max(0,(U.wagered||0)-(U.returned||0)));
+  $("edge").textContent="نسبة العائد النظرية "+C.settings.rtp+"%: من كل 100 تراهن بيها بيرجعلك "+C.settings.rtp+" في المتوسط والباقي للمنصة. عائدك الفعلي: "+(U.wagered?(U.returned/U.wagered*100).toFixed(1)+"%":"—");
+  ["g1","g2","g3"].forEach(g=>{$("p_"+g).classList.toggle("hide",g!==game);document.querySelector('.tabs [data-g="'+g+'"]').classList.toggle("on",g===game);});
+  const pl=!!U.game;
+  $("start").disabled=pl;$("m2").disabled=$("m3").disabled=pl;
+  const can=pl&&U.game.level>=1;
+  $("cash").disabled=!can;
+  $("cash").textContent=can?C.texts.btnCash+" "+f(U.game.bet*lmult(U.game.mode,U.game.level)):C.texts.btnCash;
+  const cm=pl?U.game.mode:mode;$("m2").className=cm===2?"":"g";$("m3").className=cm===3?"":"g";
+  ["ch","ct","roll"].forEach(i=>$(i).disabled=pl);
+  $("coininfo").textContent="المضاعف ×"+r2(C.settings.rtp/100*2)+" | فرصة الفوز 50%";
+  if(!$("msg").textContent)msg(tpl(C.texts.msgStart));
+  drawLadder();updDice();tipTick(false);
+}
+
+/* ---------- منطق اللعب (عمليات آمنة ضد التداخل) ---------- */
+async function run(fn){
+  let out={};
+  const res=await ref.transaction(u=>{
+    if(!u)return u;
+    out={};
+    if(u.closed){out.err=C.texts.closedMsg;return;}
+    try{return fn(u,out);}catch(e){out.err=e.message;return;}
+  });
+  if(!res.committed)return {err:out.err||"حصلت مشكلة، جرّب تاني"};
+  return out;
+}
+function chkBet(u,bet){
+  if(!(bet>=C.settings.minBet))throw new Error("الرهان "+C.settings.minBet+" على الأقل");
+  if(bet>u.balance)throw new Error(C.texts.noBal);
+}
+function fin(u,win){
+  u.game=null;u.rounds=(u.rounds||0)+1;
+  if(win>0)u.wins=(u.wins||0)+1;else u.losses=(u.losses||0)+1;
+  u.returned=r2((u.returned||0)+win);u.balance=r2(u.balance+win);u.last=Date.now();
+}
+function inst(u,bet,win){
+  u.balance=r2(u.balance-bet+win);u.wagered=r2((u.wagered||0)+bet);
+  u.returned=r2((u.returned||0)+win);u.rounds=(u.rounds||0)+1;
+  if(win>0)u.wins=(u.wins||0)+1;else u.losses=(u.losses||0)+1;u.last=Date.now();
+}
+const sc=u=>(u.scale||100)/100;
+const getBet=()=>r2(parseFloat($("bet").value));
+
+async function lstart(){
+  const bet=getBet();
+  const o=await run(u=>{chkBet(u,bet);if(u.game)throw new Error("عندك جولة شغالة");
+    u.balance=r2(u.balance-bet);u.wagered=r2((u.wagered||0)+bet);u.last=Date.now();u.game={bet:bet,mode:mode,level:0};return u;});
+  if(o.err)return msg(o.err);
+  lastLoss=null;msg(tpl(C.texts.msgFirst));
+}
+async function lpick(c){
+  const r=rnd();
+  const o=await run((u,o)=>{
+    const g=u.game;if(!g)throw new Error("مفيش جولة");
+    const m=g.mode,row=g.level;
+    if(r>=(m-1)/m*sc(u)){fin(u,0);o.lost={row:row,col:c,mode:m};return u;}
+    g.level++;
+    if(g.level>=ROWS){const w=r2(g.bet*lmult(m,g.level));fin(u,w);o.won=w;}
+    return u;});
+  if(o.err)return msg(o.err);
+  if(o.lost){lastLoss=o.lost;msg(tpl(rndLine(C.texts.msgLost)));}
+  else if(o.won){lastLoss=null;msg(tpl(C.texts.msgWin)+" "+f(o.won));}
+  else msg(tpl(C.texts.msgNext));
+}
+async function lcash(){
+  const o=await run((u,o)=>{
+    const g=u.game;if(!g||g.level<1)throw new Error("مينفعش تسحب دلوقتي");
+    const w=r2(g.bet*lmult(g.mode,g.level));fin(u,w);o.won=w;return u;});
+  if(o.err)return msg(o.err);
+  lastLoss=null;msg(tpl(C.texts.msgCash)+" "+f(o.won));
+}
+function outcome(win){return win>0?tpl(C.texts.msgWin)+" "+f(win):tpl(rndLine(C.texts.msgLost));}
+async function coin(side){
+  const bet=getBet(),r=rnd();
+  const o=await run((u,o)=>{
+    if(u.game)throw new Error("خلّص جولة السلّم الأول");chkBet(u,bet);
+    const won=r<0.5*sc(u);
+    o.res=won?side:(side==="h"?"t":"h");
+    o.win=won?r2(bet*C.settings.rtp/100*2):0;
+    inst(u,bet,o.win);return u;});
+  if(o.err)return msg(o.err);
+  $("coinres").textContent=o.res==="h"?"🪙 صورة":"🪙 كتابة";
+  msg(outcome(o.win));
+}
+async function dice(){
+  const bet=getBet(),t=+$("tg").value,over=dmode==="over",r=rnd(),r2_=rnd();
+  const p=(over?100-t:t)/100;
+  const o=await run((u,o)=>{
+    if(u.game)throw new Error("خلّص جولة السلّم الأول");chkBet(u,bet);
+    const won=r<p*sc(u);
+    const wLo=over?t+1:1,wHi=over?100:t,lLo=over?1:t+1,lHi=over?t:100;
+    const lo=won?wLo:lLo,hi=won?wHi:lHi;
+    o.roll=lo+Math.floor(r2_*(hi-lo+1));
+    o.win=won?r2(bet*C.settings.rtp/100/p):0;
+    inst(u,bet,o.win);return u;});
+  if(o.err)return msg(o.err);
+  $("diceres").textContent="🎲 "+o.roll;
+  msg(outcome(o.win));
+}
+
+/* ---------- الحسابات ---------- */
+function attach(n,h){
+  name=n;ref=DB.ref("users/"+n);prev=-1;
+  ref.on("value",s=>{
+    const u=s.val();
+    if(!u||u.pw!==h){logout("سجّل دخول من جديد");return;}
+    if(u.closed){logout(C.texts.closedMsg);return;}
+    U=u;show("main");render();
+    if(prev>=0&&U.rounds>prev&&C.settings.popEvery>0&&U.rounds%C.settings.popEvery===0)modal(tpl(C.texts.popText));
+    prev=U.rounds||0;
+  });
+}
+function logout(t){
+  if(ref)ref.off();ref=null;U=null;name=null;lastLoss=null;
+  localStorage.removeItem(SESS);$("msg").textContent="";
+  show("auth");$("aerr").textContent=t||"";applyCfg();tipTick(false);
+}
+async function auth(kind){
+  const n=$("u").value.trim().toLowerCase(),p=$("p").value,err=t=>$("aerr").textContent=t;
+  if(!/^[a-z0-9_]{3,20}$/.test(n))return err("الاسم 3-20 حرف إنجليزي أو أرقام أو _");
+  if(p.length<6)return err("كلمة السر 6 أحرف على الأقل");
+  const h=await hash(n,p),r=DB.ref("users/"+n),snap=await r.get();
+  if(kind==="register"){
+    if(!C.settings.registration)return err(C.texts.regClosed);
+    if(snap.exists())return err("الاسم مستخدم");
+    let id;try{id=await newId(n);}catch(e){return err("حصلت مشكلة، جرّب تاني");}
+    const s0=C.settings.newZero?0:Number(C.settings.initial);
+    await r.set({id:id,pw:h,balance:s0,regBonus:s0,rounds:0,wins:0,losses:0,wagered:0,returned:0,closed:false,created:Date.now(),last:0});
+  }else{
+    const u=snap.val();
+    if(!u||u.pw!==h)return err("اسم المستخدم أو كلمة السر غلط");
+    if(u.closed)return err(C.texts.closedMsg);
+  }
+  err("");$("p").value="";
+  localStorage.setItem(SESS,JSON.stringify({n:n,h:h}));
+  attach(n,h);
+}
+
+/* ---------- التشغيل ---------- */
+$("bl").onclick=()=>auth("login");$("br").onclick=()=>auth("register");
+$("out").onclick=()=>logout();
+$("m2").onclick=()=>{mode=2;lastLoss=null;if(U)render();};
+$("m3").onclick=()=>{mode=3;lastLoss=null;if(U)render();};
+$("start").onclick=lstart;$("cash").onclick=lcash;
+$("ch").onclick=()=>coin("h");$("ct").onclick=()=>coin("t");$("roll").onclick=dice;
+$("tg").oninput=updDice;
+$("du").onclick=()=>{dmode="under";updDice();};$("do").onclick=()=>{dmode="over";updDice();};
+document.querySelectorAll(".tabs button").forEach(b=>b.onclick=()=>{game=b.dataset.g;if(U)render();});
+document.querySelectorAll("[data-b]").forEach(b=>b.onclick=()=>{$("bet").value=b.dataset.b;});
+DB.ref("config").on("value",s=>{merge(s.val());applyCfg();if(U)render();});
+setInterval(()=>tipTick(true),8000);
+applyCfg();
+try{const sv=JSON.parse(localStorage.getItem(SESS));
+  if(sv&&sv.n&&sv.h)attach(sv.n,sv.h);else show("auth");
+}catch(e){show("auth");}
+</script></body></html>
+<!-- END -->
+  const sv=JSON.p
